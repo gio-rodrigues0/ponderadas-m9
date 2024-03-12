@@ -1,54 +1,39 @@
-# Ponderada 1
+# Ponderada 5
 
-Nesta ponderada, implementamos um publisher responsável por enviar dados de um sensor simulado. O sensor simulado é um script gerador de valores aleatórios.
+Nesta ponderada, implementamos a integração do nosso publisher com uma ferramenta de Business Inteligence, o Metabase.
 
-## Gerador
+## Armazenamento
 
-Para criar os dados simulados, é necessário fornecer a quantidade de dados, o valor mínimo e o valor máximo como argumentos ao executar o script. A função então utiliza esses valores como parâmetros e os salva em um arquivo CSV.
+Para o armazenamento dos dados que alimentaram o Metabase, foi utilizado um banco de dados SQLite junto com um pequeno backend em Python.
 
-## Publisher
-
-No publisher, o primeiro passo é a configuração, onde os dados contidos em um arquivo JSON de configuração são lidos e salvos em um objeto. Em seguida, cada linha do arquivo CSV de dados é lida. Para cada linha, um JSON é criado, combinando o valor do CSV com as informações recebidas no JSON de configuração, como tipo de sensor e localização. Esses valores são então publicados, seguindo a frequência especificada no arquivo JSON de configuração.
+Quando um dado é publicado no tópico, uma rota de POST é chamada e armazena o json enviado no banco.
 
 ## Como utilizar
 
-1. Primeiramente, instale as dependências necessárias:
+1. Primeiro, é necessária ter Docker instalado na máquina, para então, rodarmos o arquivo docker-compose, que rodará o Metabase garantindo a persistência dos dados. Não esqueça de abrir o Docker.
 
 ```sh
-pip install csv
+docker compose up
 ```
 
 ```sh
 sudo apt-get install mosquitto mosquitto-clients
 ```
 
-2. Crie o arquivo de configuração do broker, chamado `mosquitto.conf`:
+2. Agora, já podemos iniciar o nosso backend, que criará a nossa tabela, se ela já não existir, e disponibilizará nossa rota.
 
 ```
-listener 1891
-allow_anonymous true
+python3 backend.py
 ```
 
-3. Inicie o broker localmente:
-
-```sh
-mosquitto -c mosquitto.conf
-```
-
-4. Para gerar os valores do sensor, execute o seguinte comando:
-
-```sh
-python3 gerador.py <quantidade_de_dados> <valor_mínimo> <valor_máximo>
-```
-
-5. Para publicar, execute:
+3. Já é possível começar as publicações, verifique se o arquivo de configuração está correto e gere novos dados se quiser. Se já estiver tudo pronto, manda bala no comando:
 
 ```sh
 python3 publisher.py
 ```
 
-6. Se desejar alterar as configurações do sensor, acesse o arquivo `config.json` e edite as informações conforme sua preferência.
+4. Para visualizá-los pelo Metabase, acesse localhost:3000.
 
 ## Demonstração
 
-[Demonstração](<Screencast from 18-02-2024 23:36:26.webm>)
+Meus vídeos não funcionam mais aqui, ainda não descobri o motivo :(
